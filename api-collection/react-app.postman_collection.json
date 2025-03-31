@@ -1,0 +1,261 @@
+{
+	"info": {
+		"_postman_id": "2882c2f3-f7ff-4fb3-b9e3-421faebffbca",
+		"name": "react-app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14661546",
+		"_collection_link": "https://lively-rocket-605022.postman.co/workspace/Impetus~2ee66135-5a5d-4ae5-9fe1-2fa72cc64030/collection/14661546-2882c2f3-f7ff-4fb3-b9e3-421faebffbca?action=share&source=collection_link&creator=14661546"
+	},
+	"item": [
+		{
+			"name": "subscription",
+			"item": [
+				{
+					"name": "get-subscription",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/subscription/get/6627867fd0ea5148e2889f2f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"subscription",
+								"get",
+								"6627867fd0ea5148e2889f2f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create sub",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uid\": \"6627867fd0ea5148e2889f2f\",\r\n    \"course\": {\r\n        \"courseId\": \"664f7b62267450e51a5cd608\",\r\n        \"startDate\": 1716463652,\r\n        \"endDate\": 1747999649\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/subscription/create-sub",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"subscription",
+								"create-sub"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "course",
+			"item": [
+				{
+					"name": "get course",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/course/get/664f7b62267450e51a5cd608",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"course",
+								"get",
+								"664f7b62267450e51a5cd608"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list course",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/course/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"course",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create course",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"nodejs\",\r\n    \"price\": 5000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/course/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"course",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phoneNumber\":\"1111111100\",\r\n    \"password\":\"abc123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/user/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign-up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phoneNumber\":\"8839974136\",\r\n    \"password\":\"abc123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/user/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"user",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/user/get-user/661e050a81433121f698f164",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"user",
+						"get-user",
+						"661e050a81433121f698f164"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"abc@890\",\r\n    \"countryCode\": \"+91\",\r\n    \"phoneNumber\": \"1111111100\",\r\n    \"password\": \"abc123\",\r\n    \"name\": \"santosh\",\r\n    \"address\": {}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/user/create-user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"user",
+						"create-user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
