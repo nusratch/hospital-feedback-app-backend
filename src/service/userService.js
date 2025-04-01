@@ -42,7 +42,6 @@ class userService {
         try {
             let userData
             // TODO: convert email to lower case before db call 
-            console.log(":::::::loginData", loginData)
             if (loginData.email) {
                 userData = (await this.userDB.getByquery({ email: loginData.email }))?.[0]
             } else if (loginData.phoneNumber) {
@@ -129,7 +128,6 @@ class userService {
             } else {
                 query.name = searchText;
             }
-            console.log(":::::::query", query, searchText)
             return (await this.userDB.getByquery(query))?.map(item=>{
                 return util.responseFormate(item, false)
             });
