@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const routes = require('../src/routes');
+const routes = require('../src/routes/index.js');
 const mongoose = require("../src/connectors/dbConnector")
 const { errorHandler } = require('../src/util/errorHandling');
 const app = express();
