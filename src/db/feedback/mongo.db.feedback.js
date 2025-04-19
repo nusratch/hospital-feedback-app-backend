@@ -1,6 +1,6 @@
 const feedbackReqModal = require("../../modal/feedbackReqModal")
 
-class signUpReqDb {
+class feedbackReqDb {
 
     async findById(id) {
         return await feedbackReqModal.findById(id)
@@ -23,4 +23,4 @@ class signUpReqDb {
     }
 }
 
-module.exports = signUpReqDb
+module.exports = feedbackReqDb

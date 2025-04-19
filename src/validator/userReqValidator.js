@@ -142,7 +142,6 @@ const searchUserValidator = (req, res, next) => {
         //         return;
         //   
         req.locals = { value: body.searchText }
-        console.log("::::::body",body, req.locals)  
         next();
     }
     catch (err) {

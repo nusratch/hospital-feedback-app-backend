@@ -74,17 +74,19 @@ function generateOTP(signUpData) {
     return otpData;
 }
 
-async function httpcall(method, query) {
+async function httpcall(method, data, url) {
     try {
 
         const options = {
-            method: 'POST',
+            method: method ?? 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(query),
-        }
-        const response = await fetch(`${Config.graphqlUrl}`, options);
+            body: JSON.stringify(data),
+        };
+
+        console.log(":::::", JSON.stringify(data));
+        const response = await fetch(`${url}`, options);
 
         if (!response.ok && !response.statusText.Ok) {
             const data = await response.json()
@@ -92,8 +94,9 @@ async function httpcall(method, query) {
             throw new Error(data.message || 'Failed to fetch data.');
         }
         const responseData = await response.json()
-        return responseData.data[method];
+        return responseData;
     } catch (error) {
+        console.log(error);
         throw error
     }
 };
