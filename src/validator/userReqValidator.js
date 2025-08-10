@@ -5,7 +5,7 @@ const getUserValidator = (req, res, next) => {
     console.log("::::::", query)
 
     const schema = Joi.object({
-        email: Joi.string().required()
+        uid: Joi.string().required()
     })
 
     try {

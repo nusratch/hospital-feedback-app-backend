@@ -1,7 +1,7 @@
 
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const userDB = require('../db/user/user.db.proccessor');
-const { httpcall } = require('../util/util');
+const { httpcall, dateFormat } = require('../util/util');
 const dmssService = require('./dmssService')
 
 class feedbackService {
@@ -20,6 +20,7 @@ class feedbackService {
             const feedback = {
                 hospitalToken: feedbackData.hospitalToken,
                 additionalComments: feedbackData.ratings.additionalComments,
+                timestamp: new Date(),
                 ratings: {
                     doctorBehavior: feedbackData.ratings.doctorBehavior,
                     nursingStaff: feedbackData.ratings.nursingStaff,
@@ -35,22 +36,28 @@ class feedbackService {
                 },
             };
 
-            const dbFeedbackData = (await this.feedbackReqDb.getByquery({ uid: feedbackData.uid }))?.[0];
+            // const dbFeedbackData = (await this.feedbackReqDb.getByquery({
+            //     uid: feedbackData.uid,
+            //     feedback: {
+            //         hospitalToken: feedbackData.hospitalToken
+            //     }
+            // }))?.[0];
+
+            
+            const dbFeedbackData = (await this.feedbackReqDb.getByquery({
+                uid: feedbackData.uid,
+                "feedback.hospitalToken": feedbackData.hospitalToken
+            }))?.[0];
 
 
             if (dbFeedbackData) {
-                const findRequest = dbFeedbackData.feedback.find((item) => item.hospitalToken == feedbackData.hospitalToken);
+                throw { httpCode: 400, code: 'request-already-found', message: `Feedback is already submited` };
 
-                if (findRequest) throw { httpCode: 400, code: 'request-already-found', message: `Feedback is already submited` };
-
-                dbFeedbackData.feedback.push(feedback);
-
-                await this.feedbackReqDb.update(dbFeedbackData._id, { feedback: dbFeedbackData.feedback });
             } else {
 
                 let newFeedBackData = {
                     uid: feedbackData.uid,
-                    feedback: [feedback]
+                    feedback: feedback
                 };
 
                 await this.feedbackReqDb.create(newFeedBackData)
@@ -65,8 +72,8 @@ class feedbackService {
 
                 console.log("data for DMSS", data);
 
-                await this.dmssService.dmss(data, feedbackData.uid, feedbackData.hospitalToken)
-            });
+                await this.dmssService.dmss(data, userData, feedbackData.hospitalToken)
+            }).catch((error) => { });
 
             return { message: 'Thank you for your feedback' };
 
@@ -77,8 +84,17 @@ class feedbackService {
 
     async feedbackList(data) {
         try {
-            const dbFeedbackData = (await this.feedbackReqDb.getByquery({ uid: data.uid }))?.[0];
-            return { uid: data.uid, feedback: dbFeedbackData?.feedback || [] }
+            const dbFeedbackData = await this.feedbackReqDb.getByquery({ uid: data.uid });
+            return {
+                uid: data.uid,
+                feedback: dbFeedbackData.map((item) => ({
+                    id: item.feedback.hospitalToken,
+                    hospitalName: 'City General Hospital',
+                    averageRating: item.feedback.ratings.averageRating,
+                    date: dateFormat(item.feedback.timestamp),
+                    status: item.feedback.status || ''
+                })) || []
+            }
 
         } catch (error) {
             throw error

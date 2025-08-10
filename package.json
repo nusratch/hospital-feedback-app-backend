@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@ctrl/tinycolor": "^4.1.0",
+    "@sendgrid/mail": "^8.1.5",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -17,7 +18,8 @@
     "express-oauth2-jwt-bearer": "^1.6.0",
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.2.0"
+    "mongoose": "^8.2.0",
+    "twilio": "^5.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

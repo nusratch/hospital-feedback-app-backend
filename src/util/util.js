@@ -20,13 +20,25 @@ function generatPasswordeHash(password, salt = null) {
 }
 
 function customsAuthTokens(payLoad = {}) {
-    const access_token = JWT.sign(payLoad, Config.jwt.secret, { expiresIn: Config.jwt.accessTokenExpiresIn, issuer: Config.jwt.issuer });
-    const refresh_token = JWT.sign(payLoad, Config.jwt.secret, { expiresIn: Config.jwt.refreshTokenExpiresIn, issuer: Config.jwt.issuer });
+    const secret = payLoad.role === 'user' ? Config.jwt.user.secret : Config.jwt.authority.secret
+    const access_token = JWT.sign(payLoad, secret, { expiresIn: Config.jwt.accessTokenExpiresIn, issuer: Config.jwt.issuer });
+    const refresh_token = JWT.sign(payLoad, secret, { expiresIn: Config.jwt.refreshTokenExpiresIn, issuer: Config.jwt.issuer });
     const accessTokenDecoded = JWT.decode(access_token);
 
     return ({
         accessToken: access_token,
         refreshToken: refresh_token,
+        expirationTime: accessTokenDecoded['exp']
+    });
+}
+
+function refreshToken(payLoad = {}, refreshToken = "") {
+    const access_token = JWT.sign(payLoad, Config.jwt.secret, { expiresIn: Config.jwt.accessTokenExpiresIn, issuer: Config.jwt.issuer });
+    const accessTokenDecoded = JWT.decode(access_token);
+
+    return ({
+        accessToken: access_token,
+        refreshToken: refreshToken,
         expirationTime: accessTokenDecoded['exp']
     });
 }
@@ -51,7 +63,8 @@ function responseFormate(userData, withToken = true) {
         name: userData.name,
         address: userData.address ?? {},
     }
-    if (withToken) response.authToken = customsAuthTokens({ uid: userData._id })
+    if (userData.role) response.role = userData.role
+    if (withToken) response.authToken = customsAuthTokens({ uid: userData._id, role: userData.role || 'user' })
     return response;
 }
 
@@ -65,14 +78,23 @@ function courseResponseFormate(courseData) {
 }
 
 function generateOTP(signUpData) {
-    const otpData = {
-        otp: signUpData?.otp || Math.floor(1000 + Math.random() * 9000)
+    const now = new Date();
+    let otp = signUpData?.otp;
+    const lastUpdated = signUpData?.updatedAt ? new Date(signUpData.updatedAt) : null;
+
+    const timeDiffInMs = lastUpdated ? now.getTime() - lastUpdated.getTime() : Infinity;
+    const timeDiffInMinutes = timeDiffInMs / (1000 * 60);
+
+    if (!otp || timeDiffInMinutes >= 5) {
+        otp = Math.floor(100000 + Math.random() * 900000); // Generate new 6-digit OTP
     }
-    if (signUpData) {
-        otpData.updatedAt = new Date()
-    }
-    return otpData;
+
+    return {
+        otp,
+        updatedAt: now
+    };
 }
+
 
 async function httpcall(method, data, url) {
     try {
@@ -101,4 +123,42 @@ async function httpcall(method, data, url) {
     }
 };
 
-module.exports = { generatPasswordeHash, responseFormate, verifyPassword, generateOTP, httpcall, courseResponseFormate }
+function dateFormat(mongoDate) {
+    const date = mongoDate ? new Date(mongoDate) : new Date();
+
+    const formatted = new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }).format(date);
+
+    return formatted;
+}
+
+function areAllNotificationsResolved(doc) {
+    if (
+      !doc.feedback ||
+      !doc.feedback.dssmData ||
+      !Array.isArray(doc.feedback.dssmData.notificationsSent) ||
+      !doc.reviewers
+    ) {
+      return false; // Invalid structure
+    }
+    return doc.feedback.dssmData.notificationsSent.every(notification => {
+        const reviewerRole = notification.authority;
+        const reviewerInfo = doc.reviewers.get(reviewerRole);
+      return reviewerInfo && reviewerInfo.status === "resolved";
+    });
+  }
+
+module.exports = {
+    generatPasswordeHash,
+    responseFormate,
+    verifyPassword,
+    generateOTP,
+    httpcall,
+    courseResponseFormate,
+    refreshToken,
+    dateFormat,
+    areAllNotificationsResolved
+}

@@ -1,6 +1,6 @@
 const mongoDb_feedbackReq = require("./mongo.db.feedback")
 
-class signUpReqDb {
+class feedbackDb {
 
     constructor() {
         this.feedback = new mongoDb_feedbackReq()
@@ -8,7 +8,7 @@ class signUpReqDb {
 
     async get(id) {
         return await this.feedback.findById(id)
-    }
+    }   
 
     async getByquery(query) {
         return await this.feedback.getByquery(query)
@@ -20,6 +20,7 @@ class signUpReqDb {
 
     async update(id, updateData) {
 
+        console.log("::::::::::::update", updateData)
         return await this.feedback.update(id, updateData);
     }
 
@@ -28,4 +29,4 @@ class signUpReqDb {
     }
 }
 
-module.exports = signUpReqDb
+module.exports = feedbackDb

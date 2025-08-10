@@ -14,6 +14,7 @@ class userDb {
         return await this.user.getByquery(query)
     }
     async create(createData) {
+         console.log(">>>>>>>>>>>",createData);
         return await this.user.create(createData)
     }
     async update(uid, updateData) {

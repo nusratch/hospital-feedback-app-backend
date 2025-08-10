@@ -21,13 +21,13 @@ const commentSentimentSchema = new Schema({
 
 // Original Feedback Schema
 const originalFeedbackSchema = new Schema({
-  feedbackType: { 
-    type: String, 
+  feedbackType: {
+    type: String,
     enum: ['positive', 'negative', 'neutral'],
-    required: true 
+    required: true
   },
-  confidence: { 
-    type: Number, 
+  confidence: {
+    type: Number,
     required: true,
     min: 0,
     max: 1
@@ -53,9 +53,9 @@ const originalFeedbackSchema = new Schema({
     min: 1,
     max: 5
   },
-  commentSentiment: { 
-    type: commentSentimentSchema, 
-    required: true 
+  commentSentiment: {
+    type: commentSentimentSchema,
+    required: true
   }
 }, { _id: false });
 
@@ -101,15 +101,6 @@ const dmssDataSchema = new Schema({
     required: true
   },
   notificationsSent: [notificationSchema],
-  timestamp: {
-    type: Date,
-    default: Date.now
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'in_progress', 'resolved', 'closed'],
-    default: 'pending'
-  },
   resolutionNotes: {
     type: String
   },
@@ -123,57 +114,70 @@ const dmssDataSchema = new Schema({
 
 // Main Feedback Schema
 const feedbackReqSchema = new Schema({
-    uid: {
-        type: String,
-        index: true,
+  uid: {
+    type: String,
+  },
+
+  feedback: {
+    _id: false,
+    hospitalToken: {
+      type: String,
+      required: true,
+      minlength: 3,
+      maxlength: 20
     },
 
-    feedback: [
-        {
-            _id: false,
-            hospitalToken: {
-                type: String,
-                required: true,
-                minlength: 3,
-                maxlength: 20
-            },
-
-            additionalComments: {
-                type: String,
-                default: '',
-                maxlength: 500
-            },
-
-            ratings: {
-                doctorBehavior: { type: Number, required: true, min: 1, max: 5 },
-                nursingStaff: { type: Number, required: true, min: 1, max: 5 },
-                waitingTime: { type: Number, required: true, min: 1, max: 5 },
-                cleanliness: { type: Number, required: true, min: 1, max: 5 },
-                foodQuality: { type: Number, required: true, min: 1, max: 5 },
-                medicationAvailability: { type: Number, required: true, min: 1, max: 5 },
-                registrationProcess: { type: Number, required: true, min: 1, max: 5 },
-                hospitalFacilities: { type: Number, required: true, min: 1, max: 5 },
-                costOfTreatment: { type: Number, required: true, min: 1, max: 5 },
-                overallExperience: { type: Number, required: true, min: 1, max: 5 },
-                averageRating: { type: Number, required: true, min: 1, max: 5, },
-            },
-
-            // Updated dssmData with proper schema
-            dssmData: {
-                type: dmssDataSchema,
-                default: null
-            },
-        }
-    ],
-
-    createAt: {
-        type: Date,
-        default: Date.now
+    additionalComments: {
+      type: String,
+      default: '',
+      maxlength: 500
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+
+    ratings: {
+      doctorBehavior: { type: Number, required: true, min: 1, max: 5 },
+      nursingStaff: { type: Number, required: true, min: 1, max: 5 },
+      waitingTime: { type: Number, required: true, min: 1, max: 5 },
+      cleanliness: { type: Number, required: true, min: 1, max: 5 },
+      foodQuality: { type: Number, required: true, min: 1, max: 5 },
+      medicationAvailability: { type: Number, required: true, min: 1, max: 5 },
+      registrationProcess: { type: Number, required: true, min: 1, max: 5 },
+      hospitalFacilities: { type: Number, required: true, min: 1, max: 5 },
+      costOfTreatment: { type: Number, required: true, min: 1, max: 5 },
+      overallExperience: { type: Number, required: true, min: 1, max: 5 },
+      averageRating: { type: Number, required: true, min: 1, max: 5, },
     },
+
+    // Updated dssmData with proper schema
+    dssmData: {
+      type: dmssDataSchema,
+      default: null
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'in_progress', 'resolved'],
+      default: 'pending'
+    },
+  },
+  reviewers: {
+    type: Map,
+    of: new mongoose.Schema({
+      status: { type: String, required: true },
+      reviewerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      updatedAt: { type: Date, default: Date.now }
+    }, { _id: false })
+  },
+  createAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
 }, { versionKey: false });
 
 

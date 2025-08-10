@@ -1,4 +1,6 @@
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
+const { generateEmailContent } = require('../templates/mailTemplate');
+const { sendEmail, staffContacts } = require('./mailService');
 
 
 class dmssService {
@@ -19,10 +21,11 @@ class dmssService {
         };
     }
 
-    async dmss(dmssData, uid, hospitalToken) {
+    async dmss(dmssData, userData, hospitalToken) {
         try {
             // Extract relevant data from the input
             const { feedbackType, problematicFields, averageRating, commentSentiment } = dmssData;
+            const uid = userData._id;
 
             let responseMessage = '';
             let notificationsToSend = [];
@@ -53,6 +56,19 @@ class dmssService {
 
             // Store feedback data in database
             await this.storeFeedbackData(dmssData, responseMessage, notificationsToSend, uid, hospitalToken);
+
+            const htmlText = generateEmailContent(responseMessage, feedbackType === 'positive');
+
+
+            if (userData.email) {
+                await sendEmail({
+                    to: userData.email,
+                    subject: hospitalToken + " :  Thank You for Your Feedback",
+                    html: htmlText,
+                })
+            } else {
+
+            }
 
             return {
                 message: responseMessage,
@@ -135,25 +151,19 @@ class dmssService {
             originalFeedback: dmssData,
             systemResponse: response,
             notificationsSent: notifications,
-            timestamp: new Date()
         };
 
         // In a real implementation, you would save this to your database
         // await this.signUpReqDb.storeFeedback(feedbackRecord);
         console.log('Feedback data stored:', feedbackRecord);
 
-        const dbFeedbackData = (await this.feedbackReqDb.getByquery({ uid: uid }))?.[0];
+        const dbFeedbackData = (await this.feedbackReqDb.getByquery({
+            uid: uid,
+            "feedback.hospitalToken": hospitalToken
+        }))?.[0];
 
         if (dbFeedbackData) {
-            const index = dbFeedbackData.feedback.findIndex((item) => item.hospitalToken == hospitalToken);
-
-            if (!(index > -1)) throw { httpCode: 400, code: 'request-not-found', message: `Feedback request not found` };
-
-            dbFeedbackData.feedback[index] = {
-                ...dbFeedbackData.feedback[index],
-                dssmData: feedbackRecord
-            };
-
+            dbFeedbackData.feedback.dssmData = { ...feedbackRecord };
             await this.feedbackReqDb.update(dbFeedbackData._id, { feedback: dbFeedbackData.feedback });
         } else {
             throw { httpCode: 400, code: 'request-not-found', message: `Feedback request not found` };

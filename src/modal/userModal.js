@@ -1,32 +1,17 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    name: {
-        type: String,
-    },
-    age: {
-        type: Number,
-        index: true
-    },
+const otpDataSchema = new Schema({
     countryCode: {
         type: String,
-        length: 3,
+        maxlength: 3,
     },
-    phoneNumber: {
-        type: [Number, null],
-        length: 10,
-        match: /[1-9]/,
-        index: true,
-    },
-    password: {
-        type: Object
-    },
-    email: {
+    otp: {
         type: String,
-        index: true,
-        unique: true
+        minlength: 4,
+        maxlength: 6,
+        match: /^[0-9]+$/
     },
     createdAt: {
         type: Date,
@@ -38,8 +23,64 @@ const userSchema = new Schema({
     },
 }, { versionKey: false });
 
+const userSchema = new Schema({
+    name: {
+        type: String,
+        // required: true,
+        trim: true
+    },
+    age: {
+        type: Number,
+        min: 1,
+        max: 150,
+        index: true
+    },
+    countryCode: {
+        type: String,
+        maxlength: 3,
+    },
+    phoneNumber: {
+        type: String,
+        maxlength: 15,
+        match: /^[1-9][0-9]*$/,
+        index: true,
+        sparse: true  // allows null values with unique index
+    },
+    role: {
+        type: String,
+        minlength: 3,
+        enum: ['user', 'authority', 'super_admin'],
+        default: 'user'
+    },
+    email: {
+        type: String,
+        index: true,
+        unique: true,
+        required: true,
+        lowercase: true,
+        trim: true,
+        match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    },
+    otpData: otpDataSchema,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+}, { 
+    versionKey: false,
+    timestamps: true  // automatically handles createdAt and updatedAt
+});
 
+// Add pre-save middleware to update the updatedAt field
+userSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
+});
 
-const userModal = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema);
 
-module.exports = userModal;
+module.exports = User;

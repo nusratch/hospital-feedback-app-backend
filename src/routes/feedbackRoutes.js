@@ -4,7 +4,7 @@ const feedbackCntrl = require("../controller/feedback/index.js")
 const FeedbackReqValidator = require("../validator/feedbackReqValidator.js")
 const routes = express();
 
-routes.use(accessToken)
+// routes.use(accessToken)
 
 routes.post('/new-feedback', FeedbackReqValidator.feedback, feedbackCntrl.feedback)
 

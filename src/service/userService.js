@@ -3,6 +3,9 @@ const userDB = require('../db/user/user.db.proccessor');
 const signUpReqDB = require('../db/signup/signup.db.proccessor');
 const { UserSchema } = require('../util/schema/userSchema');
 const util = require('../util/util');
+const { sendOTP } = require('./smsService');
+const { sendEmail } = require('./mailService');
+const { generateOtpEmail } = require('../templates/otpmail');
 
 
 class userService {
@@ -12,11 +15,11 @@ class userService {
 
     }
 
-    async getUser({ email }) {
+    async getUser({ uid }) {
         try {
-            const user = await this.userDB.getByquery({ email });
-            if (!user || !user[0]) throw { httpCode: 404, code: 'user-not-found', message: `Invalid User Id` }
-            return util.responseFormate(user[0]);
+            const user = await this.userDB.get(uid);
+            if (!user) throw { httpCode: 404, code: 'user-not-found', message: `Invalid User Id` }
+            return util.responseFormate(user);
         } catch (error) {
             throw error
         }
@@ -48,9 +51,13 @@ class userService {
                 userData = (await this.userDB.getByquery({ phoneNumber: loginData.phoneNumber }))?.[0];
             }
             if (!userData) throw { httpCode: 404, code: 'user-not-found', message: loginData.email ? `This email ${loginData.email}  does not exist` : `This phoneNumber ${loginData.phoneNumber} does not exist` }
-            if (!(util.verifyPassword({ ...userData.password, password: loginData.password }))) {
-                throw { httpCode: 400, code: 'invalide-password', message: `Invalid password` }
-            }
+
+            if (loginData.otp !== userData?.otpData?.otp) {
+                throw { httpCode: 400, code: 'invalide-otp', message: `Invalid otp` }
+            };
+
+            await this.userDB.update(userData._id, { otpData: null })
+
             return util.responseFormate(userData);
         } catch (error) {
             throw error
@@ -66,15 +73,24 @@ class userService {
                 querData = { phoneNumber: signUpData.phoneNumber }
             }
             const userData = (await this.userDB.getByquery(querData))?.[0]
-
-            if (userData) throw { httpCode: 400, code: 'user-exist', message: `This ${signUpData.phoneNumber ? 'phoneNumber' : 'email'} ${signUpData.phoneNumber || signUpData.email} is already exist` }
-            const dbSignUpData = (await this.signUpReqDb.getByquery(querData))?.[0];
             const otpData = util.generateOTP(signUpData)
-            if (dbSignUpData) {
-                await this.signUpReqDb.update(dbSignUpData._id, { ...otpData })
+            if (userData) {
+                await this.userDB.update(userData._id, { otpData: otpData })
             } else {
-                await this.signUpReqDb.create({ ...signUpData, ...otpData })
+                await this.userDB.create({ ...new UserSchema(signUpData), otpData })
             }
+            const otpOptions = [];
+            console.log("::::::::::otpData", otpData);
+            if (signUpData.phoneNumber) otpOptions.push(sendOTP(signUpData.countryCode || '+880' + signUpData.phoneNumber, 'login'));
+            if (signUpData.email) {
+                otpOptions.push(sendEmail({
+                    to: signUpData.email,
+                    subject: "Login OTP",
+                    text: 'Login Otp',
+                    html: generateOtpEmail('login', { otpCode: otpData.otp }),
+                }))
+            }
+            await Promise.all(otpOptions)
             return { message: 'Do Register with your otp' };
         } catch (error) {
             throw error
@@ -128,7 +144,7 @@ class userService {
             } else {
                 query.name = searchText;
             }
-            return (await this.userDB.getByquery(query))?.map(item=>{
+            return (await this.userDB.getByquery(query))?.map(item => {
                 return util.responseFormate(item, false)
             });
         } catch (error) {

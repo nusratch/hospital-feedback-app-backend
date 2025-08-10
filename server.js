@@ -1,12 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const routes = require('../src/routes/index.js');
-const mongoose = require("../src/connectors/dbConnector")
-const { errorHandler } = require('../src/util/errorHandling');
+const routes = require('./basic-express/src/routes/index.js');
+const { errorHandler } = require('./basic-express/src/util/errorHandling.js');
 const app = express();
-
-global.ErrorCodes = require('../src/constant/errorCodes')
+global.ErrorCodes = require('./basic-express/src/constant/errorCodes.js')
 
 const port = 4000;
 
@@ -33,7 +31,7 @@ app.all('*', (req, res) => {
 
 app.use(errorHandler);
 app.listen(port, async () => {
-  console.info(`API is listening on port ${port}`);
+  console.info(`API is listening on port ${port}: http://localhost:4000/`);
 });
 
 module.exports = app;

@@ -12,7 +12,6 @@ class userDb {
         return await userModal.create(createData)
     }
     async update(uid, updateData) {
-        console.log(updateData)
         return await userModal.findOneAndUpdate({ _id: uid }, { $set: { ...updateData } })
     }
 
