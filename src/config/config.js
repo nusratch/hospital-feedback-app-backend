@@ -1,6 +1,6 @@
 module.exports = {
-    // dbUrl: 'mongodb+srv://nusratchy002:IFz8ohwtc7Z5uFSC@cluster0.pcz5eav.mongodb.net/',
-    dbUrl: 'mongodb://localhost:27017',
+    dbUrl: 'mongodb+srv://nusratchy002:IFz8ohwtc7Z5uFSC@cluster0.pcz5eav.mongodb.net/',
+    // dbUrl: 'mongodb://localhost:27017',
     hashConfig: {
         SIGNERKEY: "jxspr8Ki0RYycVU8zykbdLGjFQ3McFsasaUH0uiiTvC8pVMXAn210wjLNmdZJzxUECKbm0QsEmYUSDzZvpjeJ9WmXA==",
         SALTSEPARATOR: "Bw==",
