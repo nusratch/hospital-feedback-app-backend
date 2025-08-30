@@ -43,4 +43,8 @@ router.get('/feedback-list/:id', (req, res) => authorityController.feedbackList(
 
 router.put('/feedback/update-status/:feedbackId', (req, res) => authorityController.updateFeedbackStatus(req, res));
 
+router.post('/token/add', (req, res) => authorityController.addToken(req, res));
+router.get('/token/all', (req, res) => authorityController.getAllToken(req, res));
+
+
 module.exports = router;

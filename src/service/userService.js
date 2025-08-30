@@ -6,7 +6,7 @@ const util = require('../util/util');
 const { sendOTP } = require('./smsService');
 const { sendEmail } = require('./mailService');
 const { generateOtpEmail } = require('../templates/otpmail');
-
+const authorityDB = require('../db/authority/mongo.db.authority');
 
 class userService {
     constructor() {
@@ -72,6 +72,12 @@ class userService {
             } else if (signUpData.phoneNumber) {
                 querData = { phoneNumber: signUpData.phoneNumber }
             }
+
+            const authorityData = (await authorityDB.getByQuery(querData))?.[0];
+            if(authorityData) {
+                throw { httpCode: 400, code: 'invalide-user', message: `Invalid user` }
+            };
+
             const userData = (await this.userDB.getByquery(querData))?.[0]
             const otpData = util.generateOTP(signUpData)
             if (userData) {

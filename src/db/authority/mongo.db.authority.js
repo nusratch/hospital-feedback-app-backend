@@ -24,6 +24,9 @@ class AuthorityDB {
         return await authority.save();
     }
 
+    static async get(id) {
+        return await Authority.findById(id)
+    }
 
     static async getByQuery(query) {
         return await Authority.find(query);

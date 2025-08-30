@@ -3,6 +3,7 @@ const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const userDB = require('../db/user/user.db.proccessor');
 const { httpcall, dateFormat } = require('../util/util');
 const dmssService = require('./dmssService')
+const HospitalTokenDB = require('../db/hospital-token/mongo.db.hostpital-token')
 
 class feedbackService {
     constructor() {
@@ -16,6 +17,9 @@ class feedbackService {
 
             const userData = await this.userDB.get(feedbackData.uid);
             if (!userData) throw { httpCode: 404, code: 'user-not-found', message: `Invalid User` }
+
+            const hospitalTokenData = (await HospitalTokenDB.getByQuery({ token: feedbackData.hospitalToken }))[0];
+            if (!hospitalTokenData) throw { httpCode: 404, code: 'hospital-token-not-found', message: `Invalid Hospital Token` }
 
             const feedback = {
                 hospitalToken: feedbackData.hospitalToken,

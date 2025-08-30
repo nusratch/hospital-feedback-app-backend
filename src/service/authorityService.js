@@ -5,6 +5,7 @@ const { sendEmail } = require('./mailService');
 const { generateOtpEmail } = require('../templates/otpmail');
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const { areAllNotificationsResolved } = require('../util/util');
+const HospitalTokenDB = require('../db/hospital-token/mongo.db.hostpital-token');
 
 class AuthorityService {
     constructor() {
@@ -310,7 +311,31 @@ class AuthorityService {
         }
     }
 
+    async addToken(createdBy) {
+        try {
+            const token = await HospitalTokenDB.generateUniqueToken(6);    
+            await HospitalTokenDB.createHospitalToken({token, createdBy});
+            return {
+                success: true,
+                message: 'Token added successfully',
+                token
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
 
+    async getAllToken() {
+        try {
+            const tokens = await HospitalTokenDB.getAllHospitalTokens();
+            return {
+                success: true,
+                data: tokens
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = AuthorityService;

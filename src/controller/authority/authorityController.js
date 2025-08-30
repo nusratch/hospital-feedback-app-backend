@@ -15,9 +15,9 @@ class AuthorityController {
             res.status(201).json(result);
         } catch (error) {
             const status = 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error?.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error?.message || 'Internal server error'
             });
         }
     }
@@ -28,9 +28,9 @@ class AuthorityController {
             res.status(200).json(result);
         } catch (error) {
             const status = error.httpCode || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }
@@ -41,9 +41,9 @@ class AuthorityController {
             res.status(200).json(result);
         } catch (error) {
             const status = error.httpCode || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }
@@ -56,11 +56,11 @@ class AuthorityController {
             const result = await this.authorityService.updateAuthority(req.params.id, updateData);
             res.status(200).json(result);
         } catch (error) {
-             console.log(":::::::", error)
+            console.log(":::::::", error)
             const status = error || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }
@@ -71,9 +71,9 @@ class AuthorityController {
             res.status(200).json(result);
         } catch (error) {
             const status = error.httpCode || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }
@@ -84,9 +84,9 @@ class AuthorityController {
             res.status(200).json(result);
         } catch (error) {
             const status = error.httpCode || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }
@@ -99,11 +99,37 @@ class AuthorityController {
             const result = await this.authorityService.updateFeedbackStatus(req.params.feedbackId, updateData);
             res.status(200).json(result);
         } catch (error) {
-             console.log("::::::::::error1", error)
+            console.log("::::::::::error1", error)
             const status = error.httpCode || 500;
-            res.status(status).json({ 
-                success: false, 
-                message: error.message || 'Internal server error' 
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
+
+    async addToken(req, res) {
+        try {
+            const result = await this.authorityService.addToken(req.body.createdBy);
+            res.status(200).json(result);
+        } catch (error) {
+            const status = error.httpCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
+
+    async getAllToken(req, res) {
+        try {
+            const result = await this.authorityService.getAllToken();
+            res.status(200).json(result);
+        } catch (error) {
+            const status = error.httpCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
             });
         }
     }

@@ -33,7 +33,8 @@ function customsAuthTokens(payLoad = {}) {
 }
 
 function refreshToken(payLoad = {}, refreshToken = "") {
-    const access_token = JWT.sign(payLoad, Config.jwt.secret, { expiresIn: Config.jwt.accessTokenExpiresIn, issuer: Config.jwt.issuer });
+    const secret = payLoad.role === 'user' ? Config.jwt.user.secret : Config.jwt.authority.secret
+    const access_token = JWT.sign(payLoad, secret, { expiresIn: Config.jwt.accessTokenExpiresIn, issuer: Config.jwt.issuer });
     const accessTokenDecoded = JWT.decode(access_token);
 
     return ({
