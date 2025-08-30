@@ -133,6 +133,19 @@ class AuthorityController {
             });
         }
     }
+
+    async feedbackCount(req, res, next) {
+        try {
+            const result = await this.authorityService.feedbackCount();
+            return res.status(200).json(result);
+        } catch (error) {
+            const status = error.httpCode || 500;
+            return res.status(status).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
 }
 
 const authorityController = new AuthorityController();

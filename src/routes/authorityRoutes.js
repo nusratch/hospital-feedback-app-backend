@@ -47,4 +47,7 @@ router.post('/token/add', (req, res) => authorityController.addToken(req, res));
 router.get('/token/all', (req, res) => authorityController.getAllToken(req, res));
 
 
+router.get('/feedback/count', (req, res) => authorityController.feedbackCount(req, res));
+
+
 module.exports = router;

@@ -31,7 +31,7 @@ const updateAuthoritySchema = Joi.object({
     department: Joi.string().messages({
         'string.empty': 'Department cannot be empty'
     }),
-    role:Joi.array().required(),
+    role:Joi.string().required(),
 
     updatedBy: Joi.string()
 

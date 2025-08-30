@@ -6,6 +6,7 @@ const { generateOtpEmail } = require('../templates/otpmail');
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const { areAllNotificationsResolved } = require('../util/util');
 const HospitalTokenDB = require('../db/hospital-token/mongo.db.hostpital-token');
+const { dateFormat } = require('../util/util');
 
 class AuthorityService {
     constructor() {
@@ -98,10 +99,34 @@ class AuthorityService {
 
     async updateAuthority(id, updateData) {
         try {
-            const authority = await this.authorityDB.updateAuthority(id, updateData);
+            if(updateData.role){
+                updateData.role = [updateData.role]
+            };
+
+            const isExistRecord = (await this.authorityDB.getByQuery({ role: id }))[0];
+            if (!isExistRecord) return ({
+                success: false,
+                message: `${updateData.role} role is not exist`
+            });
+
+            const isExist = await this.authorityDB.getByQuery({ email: updateData.email });
+
+            if (isExist?.length && isExist[0].email !== updateData.email) return ({
+                success: false,
+                message: `${updateData.email} email is already exist`
+            });
+
+            const isExistPhoneNumber = await this.authorityDB.getByQuery({ phoneNumber: updateData.phoneNumber });
+            if (isExistPhoneNumber?.length && isExistPhoneNumber[0].phoneNumber !== updateData.phoneNumber) return ({
+                success: false,
+                message: `${updateData.phoneNumber} phoneNumber is already exist`
+            });
+
+            const authority = await this.authorityDB.updateAuthority(isExistRecord._id, updateData);
             if (!authority) {
                 throw { httpCode: 404, message: 'Authority not found' };
             }
+
             const groupedAuthorities = {
                 [authority.role]: {
                     name: authority.name,
@@ -331,6 +356,29 @@ class AuthorityService {
             return {
                 success: true,
                 data: tokens
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async feedbackCount() {
+        try {
+            const dbFeedbackData = await this.feedbackReqDb.getByquery({});
+
+           const formattedData = dbFeedbackData.map((item) => {
+                return {
+                    id: item._id,
+                    hospitalToken: item.feedback.hospitalToken,
+                    averageRating: item.feedback.ratings.averageRating,
+                    createAt: dateFormat(item.createAt),
+                    feedbackType: item.feedback?.dssmData?.originalFeedback?.feedbackType || '',
+                    status: item.feedback?.status || 'pending'
+                }
+            })
+            return {
+                success: true,
+                data: formattedData
             };
         } catch (error) {
             throw error;
