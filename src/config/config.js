@@ -30,8 +30,10 @@ module.exports = {
     },
     databaseType: 'aws',
     mailConfig: {
-        SENDGRID_API_KEY: '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',
-        from: 'santoshjamre4@gmail.com',
+        EMAIL_HOST: 'smtp.gmail.com',
+        EMAIL_PORT: 587,
+        EMAIL_USER: 'nusratchy.002@gmail.com',
+        EMAIL_PASSWORD: 'yfrnpcaxghexfnuv'
     },
 
     staffContacts: {
