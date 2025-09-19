@@ -72,7 +72,7 @@ class feedbackService {
                 ...feedback.ratings
             };
 
-            httpcall('post', predictData, 'http://0.0.0.0:8000/api/predict').then(async (data) => {
+            httpcall('post', predictData, 'https://web-production-9137.up.railway.app/api/predict').then(async (data) => {
 
                 console.log("data for DMSS", data);
 
