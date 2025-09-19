@@ -5,7 +5,7 @@ const { UserSchema } = require('../util/schema/userSchema');
 const util = require('../util/util');
 const { sendOTP } = require('./smsService');
 const { sendEmail } = require('./mailService');
-const { generateOtpEmail } = require('../templates/otpmail');
+const { generateOtpEmail } = require('../templates/otpMail');
 const authorityDB = require('../db/authority/mongo.db.authority');
 
 class userService {
