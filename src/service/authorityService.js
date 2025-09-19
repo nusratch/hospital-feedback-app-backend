@@ -6,7 +6,7 @@ const { generateOtpEmail } = require('../templates/otpMail');
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const { areAllNotificationsResolved } = require('../util/util');
 const HospitalTokenDB = require('../db/hospital-token/mongo.db.hostpital-token');
-const { dateFormat } = require('../util/util');
+const { dateFormat } = require('../util/util'); 
 
 class AuthorityService {
     constructor() {
