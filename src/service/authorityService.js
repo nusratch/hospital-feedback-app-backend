@@ -6,7 +6,7 @@ const { generateOtpEmail } = require('../templates/otpMail');
 const feedbackReqDB = require('../db/feedback/feedback.db.proccessor');
 const { areAllNotificationsResolved } = require('../util/util');
 const HospitalTokenDB = require('../db/hospital-token/mongo.db.hostpital-token');
-const { dateFormat } = require('../util/util'); 
+const { dateFormat } = require('../util/util');
 
 class AuthorityService {
     constructor() {
@@ -99,7 +99,7 @@ class AuthorityService {
 
     async updateAuthority(id, updateData) {
         try {
-            if(updateData.role){
+            if (updateData.role) {
                 updateData.role = [updateData.role]
             };
 
@@ -291,10 +291,11 @@ class AuthorityService {
             urgency: urgency,
             submittedAt: data.createAt,
             hospitalName: 'City General Hospital',
-            status: data.reviewers?.[notification.authority]?.status || data.feedback?.status || ''
+            status: data.reviewers instanceof Map
+                ? data.reviewers.get(notification.authority)?.status || data.feedback?.status || ''
+                : data.reviewers?.[notification.authority]?.status || data.feedback?.status || ''
         };
     }
-
 
     async updateFeedbackStatus(feedbackId, updateData) {
         try {
@@ -338,8 +339,8 @@ class AuthorityService {
 
     async addToken(createdBy) {
         try {
-            const token = await HospitalTokenDB.generateUniqueToken(6);    
-            await HospitalTokenDB.createHospitalToken({token, createdBy});
+            const token = await HospitalTokenDB.generateUniqueToken(6);
+            await HospitalTokenDB.createHospitalToken({ token, createdBy });
             return {
                 success: true,
                 message: 'Token added successfully',
@@ -366,7 +367,7 @@ class AuthorityService {
         try {
             const dbFeedbackData = await this.feedbackReqDb.getByquery({});
 
-           const formattedData = dbFeedbackData.map((item) => {
+            const formattedData = dbFeedbackData.map((item) => {
                 return {
                     id: item._id,
                     hospitalToken: item.feedback.hospitalToken,
