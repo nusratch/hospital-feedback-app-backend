@@ -6,7 +6,8 @@ const nodemailer = require('nodemailer');
 let transporter = nodemailer.createTransport({
     host: config.mailConfig.EMAIL_HOST,
     port: config.mailConfig.EMAIL_PORT,
-    secure: false,
+    secure: true,
+    port: 465,
     auth: {
         user: config.mailConfig.EMAIL_USER,
         pass: config.mailConfig.EMAIL_PASSWORD
@@ -32,13 +33,14 @@ async function sendEmail(options) {
         html: options.html,
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log('Error:', error);
-        } else {
-            console.log('Email sent:', info.response);
-        }
-    });
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Email sent:', info.response);
+        return info; // Return the info object for successful sends
+    } catch (error) {
+        console.log('Error:', error);
+        return false
+    }
 
 }
 
