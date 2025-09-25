@@ -38,44 +38,45 @@ module.exports = {
 
     staffContacts: {
         medical_director: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+medicaldirector@gmail.com',
             mobile: ''
         },
         nursing_head: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+nursinghead@gmail.com',
             mobile: ''
         },
         operations_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+operationsmanager@gmail.com',
             mobile: ''
         },
         housekeeping_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+housekeeping@gmail.com',
             mobile: ''
         },
         catering_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+catering@gmail.com',
             mobile: ''
         },
         pharmacy_head: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+pharmacy@gmail.com',
             mobile: ''
         },
         front_desk_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+frontdesk@gmail.com',
             mobile: ''
         },
         facilities_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+facilities@gmail.com',
             mobile: ''
         },
         finance_manager: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+finance@gmail.com',
             mobile: ''
         },
         hospital_administrator: {
-            email: 'nusratchy.002@gmail.com',
+            email: 'nusratchy.002+admin@gmail.com',
             mobile: ''
         }
     }
+    
 }
