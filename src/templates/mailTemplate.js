@@ -55,12 +55,11 @@ const htmlTemplate = `
         .header-icon {
             width: 80px;
             height: 80px;
-            margin: 0 auto 20px;
+            display: inline-block;
+            line-height: 80px;
+            margin: 0 0 20px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 40px;
             position: relative;
             z-index: 1;
