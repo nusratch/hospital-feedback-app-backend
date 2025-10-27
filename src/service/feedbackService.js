@@ -47,7 +47,7 @@ class feedbackService {
             //     }
             // }))?.[0];
 
-            
+
             const dbFeedbackData = (await this.feedbackReqDb.getByquery({
                 uid: feedbackData.uid,
                 "feedback.hospitalToken": feedbackData.hospitalToken
@@ -72,12 +72,10 @@ class feedbackService {
                 ...feedback.ratings
             };
 
-            httpcall('post', predictData, 'https://hospital-feedback-api.onrender.com/api/predict').then(async (data) => {
+            const data = await httpcall('post', predictData, 'https://hospital-feedback-api.onrender.com/api/predict');
 
-                console.log("data for DMSS", data);
-
-                await this.dmssService.dmss(data, userData, feedbackData.hospitalToken)
-            }).catch((error) => { console.log("Api Call Error", error) });
+            console.log("data for DMSS", data);
+            await this.dmssService.dmss(data, userData, feedbackData.hospitalToken);
 
             return { message: 'Thank you for your feedback' };
 
@@ -105,7 +103,7 @@ class feedbackService {
         }
     }
 
-   
+
 }
 
 module.exports = feedbackService;
