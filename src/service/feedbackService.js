@@ -72,7 +72,7 @@ class feedbackService {
                 ...feedback.ratings
             };
 
-            httpcall('post', predictData, 'https://web-production-9137.up.railway.app/api/predict').then(async (data) => {
+            httpcall('post', predictData, 'https://hospital-feedback-api.onrender.com/api/predict').then(async (data) => {
 
                 console.log("data for DMSS", data);
 
