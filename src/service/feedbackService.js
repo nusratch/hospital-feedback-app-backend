@@ -77,7 +77,7 @@ class feedbackService {
                 console.log("data for DMSS", data);
 
                 await this.dmssService.dmss(data, userData, feedbackData.hospitalToken)
-            }).catch((error) => { });
+            }).catch((error) => { console.log("Api Call Error", error) });
 
             return { message: 'Thank you for your feedback' };
 

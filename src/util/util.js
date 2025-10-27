@@ -96,28 +96,53 @@ function generateOTP(signUpData) {
     };
 }
 
-
 async function httpcall(method, data, url) {
     try {
+        const m = (method || 'POST').toUpperCase();
+        const isBodyMethod = m !== 'GET' && m !== 'HEAD';
 
-        const options = {
-            method: method ?? 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        };
+        const timeoutMs = 10000;
+        const retries = 2;
 
-        console.log(":::::", JSON.stringify(data));
-        const response = await fetch(`${url}`, options);
+        let lastError;
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(`${url}`, {
+                    method: m,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: isBodyMethod ? JSON.stringify(data) : undefined,
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
 
-        if (!response.ok && !response.statusText.Ok) {
-            const data = await response.json()
-            console.log("Erros", data)
-            throw new Error(data.message || 'Failed to fetch data.');
+                if (!response.ok) {
+                    const text = await response.text().catch(() => '');
+                    const error = new Error(`HTTP ${response.status} ${response.statusText} ${text}`.trim());
+                    if (response.status >= 500 && attempt < retries) {
+                        lastError = error;
+                        await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+                        continue;
+                    }
+                    throw error;
+                }
+
+                return await response.json();
+            } catch (error) {
+                clearTimeout(timer);
+                lastError = error;
+                const retriable = error.name === 'AbortError' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET' || error.code === 'EAI_AGAIN';
+                if (retriable && attempt < retries) {
+                    await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+                    continue;
+                }
+                throw error;
+            }
         }
-        const responseData = await response.json()
-        return responseData;
+        throw lastError;
     } catch (error) {
         console.log(error);
         throw error
