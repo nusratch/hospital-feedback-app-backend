@@ -256,10 +256,34 @@ class AuthorityService {
 
     async feedbackList(uid) {
         try {
-            const result = await this.feedbackReqDb.getByquery({
-                "feedback.dssmData.notificationsSent.authority": uid,
-                // "feedback.status": "pending"
-            });
+
+            let result = [];
+            if (uid === 'super_admin') {
+                result = await this.feedbackReqDb.getByquery({
+                    "feedback.dssmData.originalFeedback.feedbackType": "negative",
+                    "$and": [
+                        {
+                            // OR Condition 1: problematicFields is EITHER not present OR it's an empty array
+                            "$or": [
+                                { "feedback.dssmData.originalFeedback.problematicFields": { "$exists": false } },
+                                { "feedback.dssmData.originalFeedback.problematicFields": [] }
+                            ]
+                        },
+                        {
+                            // OR Condition 2: notificationsSent is EITHER not present OR it's an empty array
+                            "$or": [
+                                { "feedback.dssmData.notificationsSent": { "$exists": false } },
+                                { "feedback.dssmData.notificationsSent": [] }
+                            ]
+                        }
+                    ]
+                });
+            } else {
+                result = await this.feedbackReqDb.getByquery({
+                    "feedback.dssmData.notificationsSent.authority": uid,
+                    // "feedback.status": "pending"
+                });
+            }
             const formattedResult = result.map(this.formatFeedbackResponse);
             return formattedResult;
         } catch (error) {
@@ -291,6 +315,7 @@ class AuthorityService {
             urgency: urgency,
             submittedAt: data.createAt,
             hospitalName: 'City General Hospital',
+            additionalComments: data.feedback?.additionalComments,
             status: data.reviewers instanceof Map
                 ? data.reviewers.get(notification.authority)?.status || data.feedback?.status || ''
                 : data.reviewers?.[notification.authority]?.status || data.feedback?.status || ''
@@ -354,9 +379,17 @@ class AuthorityService {
     async getAllToken() {
         try {
             const tokens = await HospitalTokenDB.getAllHospitalTokens();
+            // Add 'used' field to each token by checking if it exists in feedback collection
+            const tokensWithUsage = await Promise.all(tokens.map(async (token) => {
+                const feedbackExists = await this.feedbackReqDb.getByquery({ "feedback.hospitalToken": token.token });
+                return {
+                    ...token.toObject(),
+                    used: feedbackExists.length > 0
+                };
+            }));
             return {
                 success: true,
-                data: tokens
+                data: tokensWithUsage
             };
         } catch (error) {
             throw error;
